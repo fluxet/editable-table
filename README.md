@@ -1,5 +1,6 @@
 Editable table widget with sorting by columns option.
 
+[Demo](https://fluxet.github.io/editable-table/)
 
 ## Install
 
