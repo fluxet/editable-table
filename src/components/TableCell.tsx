@@ -5,18 +5,13 @@ type Row = {
     [key: string]: string | number; 
 };
 
-type Data = {
-    rows: Row[];
-    columnNames: string[];
-};
-
-type TDProps = {
+type TableCellProps = {
     row: Row;
     name: string;
-    setData: React.Dispatch<React.SetStateAction<Data>>
+    setRows: React.Dispatch<React.SetStateAction<Row[]>>
 };
 
-const TableCell = ({row, name, setData}:TDProps) => {
+const TableCell = ({row, name, setRows}:TableCellProps) => {
     const initialValue = row[name];
     const [isEditing, setIsEditing] = useState(false);
     const [content, setContent] = useState(initialValue);
@@ -35,9 +30,9 @@ const TableCell = ({row, name, setData}:TDProps) => {
 
     const onCellEnter = (evt: { key: string; }) => {
         if (evt.key === 'Enter') {
-            setData((prev) => {
-                prev.rows[row.rowKey][name] = content;
-                return {rows: prev.rows, columnNames: prev.columnNames};
+            setRows((prev) => {
+                prev[row.rowKey][name] = content;
+                return [...prev];
             })
             setIsEditing(false);
         }
