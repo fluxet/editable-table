@@ -1,17 +1,19 @@
 import React, { SyntheticEvent, useEffect, useRef, useState } from "react";
+import { useAppDispatch } from "../hook";
+import { updateContent } from "../tableSlice";
 
-type Row = {
+interface Row {
     rowKey: number;
     [key: string]: string | number; 
 };
 
-type TableCellProps = {
+interface TableCellProps {
     row: Row;
     name: string;
-    setRows: React.Dispatch<React.SetStateAction<Row[]>>
 };
 
-const TableCell = ({row, name, setRows}:TableCellProps) => {
+const TableCell = ({row, name}:TableCellProps) => {
+    const dispatch = useAppDispatch();
     const initialValue = row[name];
     const [isEditing, setIsEditing] = useState(false);
     const [content, setContent] = useState(initialValue);
@@ -30,10 +32,11 @@ const TableCell = ({row, name, setRows}:TableCellProps) => {
 
     const onCellEnter = (evt: { key: string; }) => {
         if (evt.key === 'Enter') {
-            setRows((prev) => {
-                prev[row.rowKey][name] = content;
-                return [...prev];
-            })
+            dispatch(updateContent({
+                rowKey: row.rowKey,
+                name,
+                content,
+            }))
             setIsEditing(false);
         }
     };

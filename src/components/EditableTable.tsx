@@ -1,28 +1,22 @@
 import React, { useEffect, useState } from "react";
-import getData from "../utils/getData";
+import { useAppDispatch, useAppSelector } from "../hook";
 import TableCell from "./TableCell";
+import { setData, sort } from "../tableSlice";
+import getUrl from "../routes";
 
 const EditableTable = () => {
-    const [columnNames, setColumnNames] = useState([]);
-    const [rows, setRows] = useState([]);
-    const [errorMessage, setErrorMessage] = useState(null);
+    const dispatch = useAppDispatch();
+    const columnNames = useAppSelector((state) => state.table.columnNames);
+    const rows = useAppSelector((state) => state.table.rows);
+    const errorMessage = useAppSelector((state) => state.table.errorMessage);
 
     const onColumnHeaderClick = (name: string) => () => {
-        setRows((prev) => {
-            prev.sort((a, b) => (a[name] > b[name]) ? 1 : -1);
-            return [...prev];
-        });
+        dispatch(sort({name}));
     };
 
     useEffect(() => {
-        getData()
-            .then(({rows, columnNames}) => {
-                setColumnNames(columnNames);
-                setRows(rows);
-            })
-            .catch((err) => {
-                setErrorMessage(err.message);
-            });
+        const url = getUrl();
+        dispatch(setData({url}));
     }, []);
 
     if (errorMessage) {
@@ -41,7 +35,6 @@ const EditableTable = () => {
                     <tr key={row.rowKey}>
                         {columnNames.map((name) => <TableCell
                             key={`${row.rowKey}_${name}`}
-                            setRows={setRows}
                             row={row}
                             name={name}
                         />)}
